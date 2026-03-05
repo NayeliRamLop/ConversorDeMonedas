@@ -90,7 +90,3 @@ src/main/java/com/conversordemonedas/
     ExchangeRateApiCliente.java
 ```
 
-## Autor
-
-Desarrollado como parte del desafio del programa ONE.
-
