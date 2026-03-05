@@ -2,6 +2,8 @@ package com.conversordemonedas.servicio;
 
 import com.conversordemonedas.modelo.ExchangeRatePairResponse;
 import com.google.gson.Gson;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
 
 import java.io.IOException;
 import java.net.URI;
@@ -39,13 +41,24 @@ public class ExchangeRateApiCliente {
             throw new RuntimeException("HTTP " + response.statusCode() + " al consultar ExchangeRate-API");
         }
 
-        ExchangeRatePairResponse data = gson.fromJson(response.body(), ExchangeRatePairResponse.class);
+        String body = response.body();
+        JsonObject json = JsonParser.parseString(body).getAsJsonObject();
+        if (!json.has("result")) {
+            throw new RuntimeException("JSON invalido: falta la propiedad 'result'");
+        }
+        if (!"success".equalsIgnoreCase(json.get("result").getAsString())) {
+            String error = json.has("error-type") && !json.get("error-type").isJsonNull()
+                    ? json.get("error-type").getAsString()
+                    : "desconocido";
+            throw new RuntimeException("ExchangeRate-API devolvio error: " + error);
+        }
+        if (!json.has("conversion_rate") || json.get("conversion_rate").isJsonNull()) {
+            throw new RuntimeException("JSON invalido: falta la propiedad 'conversion_rate'");
+        }
+
+        ExchangeRatePairResponse data = gson.fromJson(json, ExchangeRatePairResponse.class);
         if (data == null) {
             throw new RuntimeException("Respuesta vacia de ExchangeRate-API");
-        }
-        if (!"success".equalsIgnoreCase(data.result())) {
-            String error = data.errorType() == null ? "desconocido" : data.errorType();
-            throw new RuntimeException("ExchangeRate-API devolvio error: " + error);
         }
         if (data.conversionRate() <= 0) {
             throw new RuntimeException("Tasa de conversion invalida recibida desde la API");

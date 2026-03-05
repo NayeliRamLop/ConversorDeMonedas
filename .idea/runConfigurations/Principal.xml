@@ -1,0 +1,12 @@
+﻿<component name="ProjectRunConfigurationManager">
+  <configuration default="false" name="Principal" type="Application" factoryName="Application">
+    <option name="MAIN_CLASS_NAME" value="com.conversordemonedas.Principal" />
+    <module name="conversorDeMonedas" />
+    <envs>
+      <env name="EXCHANGE_RATE_API_KEY" value="cb1261189e0011be74fd085a" />
+    </envs>
+    <method v="2">
+      <option name="Make" enabled="true" />
+    </method>
+  </configuration>
+</component>
